@@ -1,5 +1,7 @@
 # Event Finder
 
+This is to practise further development after the team project.
+
 ## Table of contents
 * [General info](#general-info)
 * [API Used](#api-used)
