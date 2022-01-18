@@ -71,32 +71,34 @@ function createMarker(place) {
   });
 }
 
+//new map with the location we insert
+function initSecondMap() {
+  infowindow = new google.maps.InfoWindow();
+  map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: userLatitude, lng: userLongitude },
+    zoom: 12,
+  });
+  const request = {
+    query: localStorage.getItem("Location"),
+    fields: ["name", "geometry"],
+  };
+
+  service = new google.maps.places.PlacesService(map);
+  service.findPlaceFromQuery(request, (results, status) => {
+    if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+      for (let i = 0; i < results.length; i++) {
+        console.log(i);
+        console.log(results[i]);
+        createMarker(results[i]);
+      }
+
+      map.setCenter(results[0].geometry.location);
+    }
+  });
+}
+
 //retrieving events data and displaying them
 function getApi() {
-  //new map with the location we insert
-  function initSecondMap() {
-    infowindow = new google.maps.InfoWindow();
-    map = new google.maps.Map(document.getElementById("map"), {
-      center: { lat: userLatitude, lng: userLongitude },
-      zoom: 12,
-    });
-    const request = {
-      query: localStorage.getItem("Location"),
-      fields: ["name", "geometry"],
-    };
-
-    service = new google.maps.places.PlacesService(map);
-    service.findPlaceFromQuery(request, (results, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-        for (let i = 0; i < results.length; i++) {
-          createMarker(results[i]);
-        }
-
-        map.setCenter(results[0].geometry.location);
-      }
-    });
-  }
-
   //getting data from ticketmaster API
   var city = localStorage.getItem("Location");
   var queryURL =
@@ -115,7 +117,7 @@ function getApi() {
       console.log(data);
       saveRecentSearches(data);
 
-      $("#events-list").html("<div></div>");
+      eventsListDiv.innerHTML = "";
       //User data validation and checking if there are events on the user city
       if (data.page.totalElements == 0) {
         if (!("_embedded" in data)) {
@@ -126,6 +128,7 @@ function getApi() {
         }
       } else {
         for (var i = 0; i < 10; i++) {
+          console.log(i)
           var displayEl = document.createElement("p");
           eventsListDiv.append(displayEl);
           displayEl.innerHTML =
@@ -155,7 +158,8 @@ function getApi() {
 
 var markerImage = "./assets/music-note-icon.png";
 function addMarker(location, map) {
-  var marker = new google.maps.Marker({
+  console.log(location);
+  new google.maps.Marker({
     position: location,
     title: "",
     icon: markerImage,
@@ -207,6 +211,7 @@ function displayRecentSearches() {
   searchHistory.innerHTML = "";
   const recentFiveSearch = userInputArr.slice(-5);
   recentFiveSearch.forEach(function (item) {
+    console.log(item);
     const historyBtn = document.createElement("button");
     historyBtn.textContent = item;
     historyBtn.style.textTransform = "capitalize";
@@ -224,7 +229,7 @@ function displayRecentSearches() {
 }
 
 //adding eventlisteners to all buttons
-myBtn.addEventListener("click", function searchCity(event) {
+myBtn.addEventListener("click", function (event) {
   event.preventDefault();
   var city = document.getElementById("keywords").value;
   if (city === "" || !isNaN(city)) {
@@ -233,7 +238,7 @@ myBtn.addEventListener("click", function searchCity(event) {
   } else {
     localStorage.setItem("Location", city);
 
-    initMap();
+    //initMap();
     getApi();
   }
 });
