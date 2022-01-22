@@ -14,7 +14,10 @@ var userInputArr = JSON.parse(localStorage.getItem("savedSearches")) || [];
 var userLatitude;
 var userLongitude;
 var userCity;
-//var userInputArr=[]
+//nabvar Btns
+const signUpBtn = document.getElementById("signUpBtn");
+const logInBtn = document.getElementById("logInBtn");
+//map
 let map;
 let service;
 let infowindow;
@@ -115,16 +118,15 @@ function getApi() {
     .then(function (data) {
       console.log(data);
       saveRecentSearches(data);
+      const isEmbedded = "_embedded" in data;
 
       eventsListDiv.innerHTML = "";
       //User data validation and checking if there are events on the user city
-      if (data.page.totalElements == 0) {
-        if (!("_embedded" in data)) {
-          var displayEl = document.createElement("p");
-          eventsListDiv.append(displayEl);
-          displayEl.innerHTML =
-            "No Events for this city or city does not exist";
-        }
+      if (data.page.totalElements == 0 && !isEmbedded) {
+        var displayEl = document.createElement("p");
+        eventsListDiv.append(displayEl);
+        displayEl.innerHTML =
+          "No Events for this city or city does not exist";
       } else {
         for (var i = 0; i < 10; i++) {
           console.log(i)
@@ -186,24 +188,21 @@ function appendCities(event) {
   }
 }
 
+function isValidUserInput(userSearchInput, data) {
+  return (userSearchInput !== "" && isNaN(userSearchInput) && "_embedded" in data && !userInputArr.slice(-5).includes(userSearchInput))
+}
+
 // saving resent searches in local storage and displaying the last 5 searches
 function saveRecentSearches(data) {
   console.log(data);
   var userSearchInput = localStorage.getItem("Location");
 
-  //checking if the value we want to append is a valid value
-  if (userSearchInput !== "") {
-    if (isNaN(userSearchInput)) {
-      if ("_embedded" in data) {
-        if (!userInputArr.slice(-5).includes(userSearchInput)) {
-          userInputArr.push(userSearchInput);
-          localStorage.setItem("savedSearches", JSON.stringify(userInputArr));
-        }
-      }
-    }
-
+  if (isValidUserInput(userSearchInput, data)) {
+    userInputArr.push(userSearchInput);
+    localStorage.setItem("savedSearches", JSON.stringify(userInputArr));
     displayRecentSearches();
   }
+
 }
 
 function displayRecentSearches() {
