@@ -46,7 +46,7 @@ The project:
 </br>
 
 ## Working Application
-The project can be viewed at: <a href="https://ekubik.github.io/event-finder/">https://ekubik.github.io/event-finder/ </a>
+The project can be viewed at: <a href="https://ayacomputer.github.io/event-finder-ver2/">https://ayacomputer.github.io/event-finder-ver2/</a>
 
 </br>
 </br>
